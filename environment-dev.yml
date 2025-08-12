@@ -3,11 +3,11 @@ name: lcls-live-dev
 channels:
   - conda-forge
 dependencies:
-  - python=3.8
+  - python=3.9
   - matplotlib-base
   - pandas
   - requests
-  - urllib3<2
+  - urllib3>=2.5
   - pyepics
   - pyyaml
   - pytao

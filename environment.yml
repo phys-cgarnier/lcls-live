@@ -7,7 +7,7 @@ dependencies:
   - matplotlib-base
   - pandas
   - requests
-  - urllib3<2
+  - urllib3
   - pyepics
   - pyyaml
   - pytao

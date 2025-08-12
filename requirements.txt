@@ -1,4 +1,4 @@
-urllib3<2
+urllib3
 pysocks
 pandas
 requests
