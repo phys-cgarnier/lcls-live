@@ -34,7 +34,9 @@ def get_datamaps(config_name: str, use_des: Union[bool, List[str]] = False):
     for dm in config_dms:
         if dm["class"] == "tabular":
             d = json.loads(dm["data"])
-            data = pd.read_json(d.pop('data'))
+            json_str = d.pop('data')
+            json_data = StringIO(json_str)
+            data = pd.read_json(json_data)
             # Handle cases where use_des applies
             if dm["name"] in ("quad", "correctors", "solenoid", "quad_corrector", "subboosters", "cavities"):
                 if (use_des is True) or (use_des is not False and dm["name"] in use_des):
