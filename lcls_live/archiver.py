@@ -40,7 +40,10 @@ def lcls_archiver_restore(pvlist, isotime='2018-08-11T10:40:00.000-07:00', verbo
 
 
 
-def lcls_archiver_history(pvname, start='2018-08-11T10:40:00.000-07:00', end='2018-08-11T11:40:00.000-07:00', verbose=True):
+def lcls_archiver_history(pvname:str, raise_error: bool = True,
+                        start: str ='2018-08-11T10:40:00.000-07:00', 
+                        end: str ='2018-08-11T11:40:00.000-07:00',
+                        verbose=True):
     """
     Get time series data from a PV name pvname,
         with start and end times in ISO 8601 format, using the EPICS Archiver Appliance:
@@ -63,11 +66,23 @@ def lcls_archiver_history(pvname, start='2018-08-11T10:40:00.000-07:00', end='20
     #url += "&donotchunk"
     #url="http://lcls-archapp.slac.stanford.edu/retrieval/data/getData.json?pv=VPIO:IN20:111:VRAW&donotchunk"
     print(url)
+
+    #TODO: do some exception handling here so the code doesn't break if you access multiple pvs
     r = requests.get(url)
-    data =  r.json()
-    secs = [x['secs'] for x in data[0]['data']]
-    vals = [x['val'] for x in data[0]['data']]
-    return secs, vals
+    
+    if r.ok:
+        data =  r.json()
+        secs = [x['secs'] for x in data[0]['data']]
+        vals = [x['val'] for x in data[0]['data']]
+        return secs, vals
+    
+    elif not r.ok and raise_error:
+       raise RuntimeError(f"Archiver request failed {pvname}. Response was: {r.status_code} - {r.reason}")
+    
+    else:
+       print(f"Archiver request for {pvname} failed. Response was: {r.status_code} - {r.reason}")
+       print("Returning Empty Lists")
+       return [], []
 
 
 def lcls_archiver_history_dataframe(pvname, **kwargs):
@@ -75,6 +90,7 @@ def lcls_archiver_history_dataframe(pvname, **kwargs):
     Same as lcls_archiver_history, but returns a dataframe with the index as the time. 
     """
 
+    #TODO: change to handle a pvname or list of pvs
     secs, vals = lcls_archiver_history(pvname, **kwargs)
     
     # Get time series
@@ -85,5 +101,4 @@ def lcls_archiver_history_dataframe(pvname, **kwargs):
     return df
 
 
-    
     
