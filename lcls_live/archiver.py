@@ -84,20 +84,31 @@ def lcls_archiver_history(pvname:str, raise_error: bool = True,
     print("Returning Empty Lists")
     return [], []
 
-def lcls_archiver_history_dataframe(pvname, **kwargs):
+def lcls_archiver_history_dataframe(
+    pvname: str | list[str],
+    **kwargs,
+) -> pd.DataFrame:
     """
-    Same as lcls_archiver_history, but returns a dataframe with the index as the time. 
+    Same as lcls_archiver_history, but returns a DataFrame with the index as time.
+    Accepts a single PV name or a list of PV names.
     """
 
-    #TODO: change to handle a pvname or list of pvs
-    secs, vals = lcls_archiver_history(pvname, **kwargs)
-    
-    # Get time series
-    ser = pd.to_datetime(pd.Series(secs), unit='s' )
-    df = pd.DataFrame({'time':ser, pvname:vals})
-    df = df.set_index('time')
-    
-    return df
+    # Normalize input
+    pvs = [pvname] if isinstance(pvname, str) else pvname
+
+    dfs = []
+
+    for pv in pvs:
+        secs, vals = lcls_archiver_history(pv, **kwargs)
+
+        ser = pd.to_datetime(secs, unit="s")
+        df = pd.DataFrame({pv: vals}, index=ser)
+        df.index.name = "time"
+
+        dfs.append(df)
+
+    # Outer join keeps all timestamps if PVs differ
+    return pd.concat(dfs, axis=1)
 
 
     
