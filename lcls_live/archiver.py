@@ -40,10 +40,11 @@ def lcls_archiver_restore(pvlist, isotime='2018-08-11T10:40:00.000-07:00', verbo
 
 
 
-def lcls_archiver_history(pvname:str, raise_error: bool = True,
+def lcls_archiver_history(pvname:str,
                         start: str ='2018-08-11T10:40:00.000-07:00', 
                         end: str ='2018-08-11T11:40:00.000-07:00',
-                        verbose=True):
+                        verbose=True,
+                        raise_error: bool = True):
     """
     Get time series data from a PV name pvname,
         with start and end times in ISO 8601 format, using the EPICS Archiver Appliance:
