@@ -69,21 +69,20 @@ def lcls_archiver_history(pvname:str, raise_error: bool = True,
 
     #TODO: do some exception handling here so the code doesn't break if you access multiple pvs
     r = requests.get(url)
-    
+
     if r.ok:
         data =  r.json()
         secs = [x['secs'] for x in data[0]['data']]
         vals = [x['val'] for x in data[0]['data']]
         return secs, vals
     
-    elif not r.ok and raise_error:
-       raise RuntimeError(f"Archiver request failed {pvname}. Response was: {r.status_code} - {r.reason}")
-    
-    else:
-       print(f"Archiver request for {pvname} failed. Response was: {r.status_code} - {r.reason}")
-       print("Returning Empty Lists")
-       return [], []
+    msg = f"Archiver request failed for {pvname}. Response was: {r.status_code} - {r.reason}"
+    if raise_error:
+        raise RuntimeError(msg)
 
+    print(msg)
+    print("Returning Empty Lists")
+    return [], []
 
 def lcls_archiver_history_dataframe(pvname, **kwargs):
     """
