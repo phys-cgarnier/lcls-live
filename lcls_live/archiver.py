@@ -94,7 +94,7 @@ def lcls_archiver_history_dataframe(
     Accepts a single PV name or a list of PV names.
     """
 
-    # Normalize input
+    
     pvs = [pvname] if isinstance(pvname, str) else pvname
 
     dfs = []
@@ -105,11 +105,13 @@ def lcls_archiver_history_dataframe(
         ser = pd.to_datetime(secs, unit="s")
         df = pd.DataFrame({pv: vals}, index=ser)
         df.index.name = "time"
+        df = df[~df.index.duplicated(keep="last")]
 
         dfs.append(df)
+        
 
-    # Outer join keeps all timestamps if PVs differ
-    return pd.concat(dfs, axis=1)
+    #outer join to keep all data. this will introduce NaNs where data is missing
+    return pd.concat(dfs, axis=1,join ='outer')
 
 
     
